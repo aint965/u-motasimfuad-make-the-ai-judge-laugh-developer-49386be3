@@ -14,5 +14,21 @@ const EXCUSE =
 // path (used for local verification only).
 const outPath = process.argv[2] ?? "/output/entry.txt";
 
+// Validate the line against the competition gate before writing
+// anything: it must be non-empty (not only whitespace), at most 200
+// characters, and a single line. Failing here is better than shipping
+// an entry the sealed scorer rejects as invalid.
+if (EXCUSE.trim().length === 0) {
+  throw new Error("Excuse line is empty or only whitespace.");
+}
+if (EXCUSE.length > 200) {
+  throw new Error(
+    `Excuse line is ${EXCUSE.length} characters, over the 200-character limit.`,
+  );
+}
+if (EXCUSE.includes("\n") || EXCUSE.includes("\r")) {
+  throw new Error("Excuse line must be a single line.");
+}
+
 mkdirSync(dirname(outPath), { recursive: true });
 writeFileSync(outPath, EXCUSE + "\n", "utf8");
